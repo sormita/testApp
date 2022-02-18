@@ -1,0 +1,8 @@
+---
+applications:
+- name: tonye1-design-sample-nodejs
+memory: 192M
+instances: 1
+buildpack: staticfile_buildpack  
+routes:
+- route: tonye1-design-sample-nodejs.us-south.cf.appdomain.cloud

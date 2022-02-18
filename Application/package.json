@@ -1,0 +1,49 @@
+{
+  "name": "example-create-react-app-express",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "yarn server",
+    "build": "yarn client",
+    "client": "cd GUI && npm install && yarn build",
+    "server": "node server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^3.15.0",
+    "@azure/identity": "1.0.0",
+    "@azure/keyvault-secrets": "4.0.0",
+    "@storybook/client-api": "^6.3.12",
+    "adal-node": "^0.2.3",
+    "azure-keyvault": "^3.0.5",
+    "body-parser": "^1.19.1",
+    "chai-http": "^4.3.0",
+    "chai-json": "^1.0.0",
+    "express": "^4.17.2",
+    "ibm-watson": "^6.2.1",
+    "little-state-machine": "^4.2.1",
+    "mongodb": "^4.3.1",
+    "multer": "^1.4.4",
+    "pdf-to-text": "^0.0.7",
+    "pdfjs-dist": "^2.12.313",
+    "react-loader-spinner": "^5.1.4",
+    "redis": "^4.0.3",
+    "winston": "^3.3.3",
+    "yarn": "^1.22.17"
+  },
+  "devDependencies": {
+    "@azure/storage-blob": "^12.0.0",
+    "@types/dotenv": "^4.0.3",
+    "chai": "^4.3.6",
+    "concurrently": "^6.4.0",
+    "dotenv": "^6.0.0",
+    "gulp": "^3.9.0",
+    "gulp-mocha": "^3.0.1",
+    "mocha": "^9.2.0",
+    "mocha-jenkins-reporter": "^0.1.9",
+    "rewire": "^2.3.4"
+  },
+  "resolutions": {
+    "graceful-fs": "^4.2.9"
+  }
+}

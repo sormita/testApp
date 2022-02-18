@@ -1,0 +1,22 @@
+{
+    "api_username" : "apikey",
+    "apikey" : "OwE9eUDEFZKTkeBdRWpaDkcKfPYIHEevKbVX9BfZAAbB",
+    "nlu_url" : "api.eu-gb.natural-language-understanding.watson.cloud.ibm.com",
+    "nlu_api_path" : "/instances/b87d4ea5-91e4-4d0b-bdf8-1b642b5f73ed/v1/analyze?version=2019-07-12",
+    "blob_key" : "Z64M0S3wvP4bwCLnHEBlR0em9nXESBk3Z9ofjhggq7P8qV8jsXqmRxR2ekIfU1loVjdKUubhbV8nEaerohQWfw==",
+    "blob_cs" : "DefaultEndpointsProtocol=https;AccountName=ibmmetlifestorage;AccountKey=Z64M0S3wvP4bwCLnHEBlR0em9nXESBk3Z9ofjhggq7P8qV8jsXqmRxR2ekIfU1loVjdKUubhbV8nEaerohQWfw==;EndpointSuffix=core.windows.net",
+    "container_name" : "claimsdocstorage",
+    "pdf_url" : "https://metlifepocstorageaccount.blob.core.windows.net/nlufileupload/Get_Started_With_Smallpdf.pdf",
+    "cosmos_endpoint" : "mongodb://metlifepocmongo:not8WKaCw2S4I6JdooK86JZXCWehtH9zbavGRmhnhEbMgurl7GJyQsUMXLBUZssooq4Niv3RTAK16UHmGPOjMQ==@metlifepocmongo.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@metlifepocmongo@",
+    "cosmos_key" : "not8WKaCw2S4I6JdooK86JZXCWehtH9zbavGRmhnhEbMgurl7GJyQsUMXLBUZssooq4Niv3RTAK16UHmGPOjMQ==",
+    "cosmos_dbId" : "NLUAnalysisDB",
+    "cosmos_containerID" : "AnalysisCollection",
+    "cosmos_partitionKey" : { "kind": "Hash", "paths": ["/Analysis"] },
+    "keyvault_url" : "https://metlifepockeyvault.vault.azure.net/",
+    "key-vault-clientID" : "b288e5b2-999f-4b54-9f71-c9d3bfa482cf",
+    "key-vault-password" : "5uHwLuNeCDF~1z0UW4-Mp-GqjfDsj3s.97",
+    "redis": {
+        "host": "127.0.0.1",
+        "port":  6379
+      }
+}

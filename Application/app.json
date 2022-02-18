@@ -1,0 +1,10 @@
+{
+  "buildpacks": [
+    {
+      "url": "https://github.com/cloudfoundry/nodejs-buildpack"
+    },
+    {
+      "url": "https://github.com/cloudfoundry/python-buildpack"
+    }
+  ]
+}

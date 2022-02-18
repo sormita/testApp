@@ -1,0 +1,9 @@
+---
+applications:
+- name: tonye1-model-api
+  memory: 512M
+  command: sh run.sh
+  route:
+     - route: https://tonye1-model-api.us-south.cf.appdomain.cloud/
+  disk_quota: 1024M
+  buildpack:  https://github.com/cloudfoundry/python-buildpack
