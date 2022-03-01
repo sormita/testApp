@@ -1,5 +1,7 @@
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 import { Redirect } from 'react-router-dom'
+import LoadingOverlay from "react-loading-overlay";
+//import { usePromiseTracker } from "react-promise-tracker";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import Form from "carbon-components-react/lib/components/Form";
@@ -34,7 +36,7 @@ import { Grid, Row } from "carbon-components-react/lib/components/Grid";
 
 import { getLog , postNLU } from "../../api";
 
-
+import "../styles.css";
 
 addons.setChannel(mockChannel());
 
@@ -115,6 +117,26 @@ const RowDetail = styled(Row)`
   align-items: center;
   margin: 1rem;
 `;
+
+const DarkBackground = styled.div`
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 999; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+
+  ${props =>
+    props.disappear &&
+    `
+      display: block; /* show */
+    `}
+`;
+
 async function getActivityLog(username, logEvent) {
   console.log('getActivityLog calling');
   var user = storage.getItem("mock-api-user")
@@ -124,11 +146,31 @@ async function getActivityLog(username, logEvent) {
 }
 
 async function getNLUAnalysis(selectedFile){
-  var nluResult=postNLU(selectedFile);
-  storage.setItem("nluEntities",nluResult);
+   var nluResult=postNLU(selectedFile);
+  // storage.setItem("nluEntities",nluResult);
   
     console.log("Analysis Terms",analysis.terms);
 }
+
+// Return a promise which resolves after the specified interval
+function getResult(selectedFile) {
+  return new Promise(resolve => {
+    var nluResult=postNLU(selectedFile);
+  // storage.setItem("nluEntities",nluResult);
+  
+    console.log("Analysis Terms");
+    for(var i = 0; i < nluResult.length; i++) {
+      //terms[i] = nluResult[i].text;
+      console.log("nlu terms inside promise:",nluResult[i].text);  
+  }
+  storage.setItem("nluEntities", JSON.stringify(nluResult));
+    resolve(nluResult);
+  });
+}
+
+
+
+
 
 // TODO: Ugly work around for session storage problem
 const backingStorage = window.sessionStorage;
@@ -172,12 +214,55 @@ var analysis = {
 
 
 
+
+
 function SubmitSection() {
   console.log("Submit Section");
+
+  
+
+  const [loaded, setLoaded] = useState(true); 
+  const [show, setshow] = useState(false); 
+
+  function useGetNLUResults() {
+  
+    //const [loaded, setLoaded] = useState(true); 
+    useEffect(() => {
+        // visible true -> false
+        if (!loaded) {
+
+          var nluResLoaded = storage.getItem("setNLU");
+          console.log("nluResLoaded",nluResLoaded)
+          if(!nluResLoaded){
+            //setTimeout(() => setLoaded(true), 5000);
+            console.log("I am here");
+          }
+          else{
+          //      var nlu=JSON.parse(storage.getItem("nluEntities"));
+               
+          //   for(var i = 0; i < nlu.length; i++) {
+          //     console.log(nlu[i]);
+          //     analysis.terms[i]=nlu[i];
+  
+          // }
+               
+            setTimeout(() => setLoaded(true), 250); 
+          }
+                  
+          
+        }
+    }); 
+  
+    return loaded;
+  }
+
   analysis.fileName = storage.getItem("fileName");
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [isFilePicked, setIsFilePicked] = useState(false);
+  
+  const isNLUResultLoaded = useGetNLUResults();
+    console.log("NLU Result loaded",isNLUResultLoaded);
 
 
   const handleFileSelect = (event) =>{
@@ -201,24 +286,38 @@ function SubmitSection() {
     var files = event.target.files; // FileList object
     //var upldFile=storage.getItem("actualFile");
     console.log("uploaded file",selectedFile);
-    var nluResult= getNLUAnalysis(selectedFile);
+    var nluResult= getResult(selectedFile);
+
+    nluResult.then(
+      function(nluResult){
+        analysis.fileName = storage.getItem("fileName");
+
+        analysis.fileSize = storage.getItem("fileSize");
+      
+        var nlu=JSON.parse(storage.getItem("nluEntities"));
+               
+        for(var i = 0; i < nlu.length; i++) {
+          
+          analysis.terms[i]=nlu[i];
+
+      }
+
+      storage.setItem("nluEntities", JSON.stringify(nlu));
     
-    analysis.fileName = storage.getItem("fileName");
-
-    analysis.fileSize = storage.getItem("fileSize");
-  
-
-    getActivityLog(storage.getItem("mock.api.user").name, " uploaded a file for review");
-    //window.location.href = ("/claims");
-
-
-
+        getActivityLog(storage.getItem("mock.api.user").name, " uploaded a file for review");        
+    
+        window.location.href = ("/claims");
+      }
+    )
+    
+    
   }
 
   return (
 
     <Section as={Form} onSubmit={handleSubmit}>
       <SectionHeading>Submit Claim for Payment</SectionHeading>
+      <Column1>
       <RowDetail>
         <p>
           1. Upload Document </p><p>
@@ -229,6 +328,39 @@ function SubmitSection() {
         <FileUploader {...props.fileUploader()} onChange={handleFileSelect} />
       </div>
       <Button type="submit" >Submit for Payment</Button>
+      <button onClick={() => setLoaded(!loaded)}>Start Loading</button>
+            <DarkBackground disappear={!loaded}>
+        {/* <Loader
+          loaded={false}
+          lines={13}
+          length={20}
+          width={10}
+          radius={30}
+          corners={1}
+          rotate={0}
+          direction={1}
+          color="#a5d8ff"
+          speed={1}
+          trail={60}
+          shadow={false}
+          hwaccel={false}
+          className="spinner"
+          zIndex={2e9}
+          top="50%"
+          left="50%"
+          scale={1.0}
+          loadedClassName="loadedContent"
+        />*/}
+        <LoadingOverlay
+          active={true}
+          // spinner={<BounceLoader />}
+          spinner={true}
+          text="Loading your content..."
+        >
+          
+        </LoadingOverlay>
+      </DarkBackground>
+      </Column1>      
     </Section>
 
   );
@@ -264,44 +396,55 @@ function AnalysisSection({ analysis }) {
   var yyyy = today.getFullYear();
   var submittedDate = JSON.stringify(mm + '/' + dd + '/' + yyyy).replace(/\"/g, "");
   analysis.bank = '711-30-2222';
-  analysis.fileName = storage.getItem("fileName")
-  return (
+  analysis.fileName = storage.getItem("fileName");
+  var nlu=JSON.parse(storage.getItem("nluEntities"));
+               
+        for(var i = 0; i < nlu.length; i++) {
+          console.log(nlu[i]);
+          analysis.terms[i]=nlu[i];
 
-    <Section as={Form} onSubmit={handleSubmitPayment}>
-      <SectionHeading>Completed Claim Processing Section</SectionHeading>
+      }
+  
+    return (
 
-      <Body>This document is payment request.</Body>
-      {renderFlag &&
-        <Body>File name is {analysis.fileName}</Body>}
-      {renderFlag &&
-        <Body>
-          It was submitted to {analysis.department} on {submittedDate}.
-        </Body>}
-      {renderFlag &&
-        <Body>
-          Requestor: {analysis.requestor}
-          <br />
-          Bank Route: {analysis.bank}
-          <br />
-          Amount: {analysis.amount}
-        </Body>}
-      {renderFlag &&
-        <SubHeading>(Simulated Watson) Relevant terms extracted</SubHeading>}
-      {renderFlag &&
-        <TagContainer>
-          {analysis.terms.map(term => (
-            <Tag key={term} type="cool-gray">
-              {term}
-            </Tag>
-          ))}
-        </TagContainer>}
+      <Section as={Form} onSubmit={handleSubmitPayment}>
+        <SectionHeading>Completed Claim Processing Section</SectionHeading>
+  
+        <Body>This document is payment request.</Body>
+        {renderFlag &&
+          <Body>File name is {analysis.fileName}</Body>}
+        {renderFlag &&
+          <Body>
+            It was submitted to {analysis.department} on {submittedDate}.
+          </Body>}
+        {renderFlag &&
+          <Body>
+            Requestor: {analysis.requestor}
+            <br />
+            Bank Route: {analysis.bank}
+            <br />
+            Amount: {analysis.amount}
+          </Body>}
+        {renderFlag &&
+          <SubHeading>(Simulated Watson) Relevant terms extracted</SubHeading>}
+        {renderFlag &&
+          <TagContainer>
+            {analysis.terms.map(term => (
+              <Tag key={term} type="cool-gray">
+                {term}
+              </Tag>
+            ))}
+          </TagContainer>}
+  
+        <Button type="submit" >
+          Approve Payment
+        </Button>
+  
+      </Section>
+    );
+  
 
-      <Button type="submit" >
-        Approve Payment
-      </Button>
-
-    </Section>
-  );
+  
 }
 
 AnalysisSection.propTypes = {
@@ -401,26 +544,12 @@ const props = {
 };
 
 
+
+
 export default function ClaimsPage() {
-  console.log("Claims page top level");
-  
-  var nlu=JSON.parse(storage.getItem("nluEntities"));
-
-
-  for(var i = 0; i < nlu.length; i++) {
-    console.log(nlu[i]);
-    analysis.terms[i]=nlu[i];
-      
-}
+  console.log("Claims page top level");  
   
   
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-  const onChange = (event, newValue) => {
-    console.log("Claims page onChange");
-  }
   return (
     <>
       <CustomPage background={theme.uiBackground} />
@@ -430,9 +559,13 @@ export default function ClaimsPage() {
         <PageContainer>
           <Column1>
             <SubmitSection />
+            
           </Column1>
           <Column2>
-            <AnalysisSection analysis={analysis} />
+          <div>
+          <AnalysisSection analysis={analysis}  /> 
+          </div>
+                     
           </Column2>
           {/* <div style={{ background: "blue" }}>&nbsp;</div> */}
         </PageContainer>

@@ -4,7 +4,7 @@
   "scripts": {
     "start": "yarn server",
     "build": "yarn client",
-    "client": "cd GUI && npm install && yarn build",
+    "client": "cd GUI && yarn build",
     "server": "node server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "test": "mocha"
@@ -25,7 +25,9 @@
     "multer": "^1.4.4",
     "pdf-to-text": "^0.0.7",
     "pdfjs-dist": "^2.12.313",
+    "react-loading-overlay": "^1.0.1",
     "redis": "^4.0.3",
+    "styled-components": "^5.3.3",
     "winston": "^3.3.3"
   },
   "devDependencies": {

@@ -217,10 +217,7 @@ const storage = {
   }
 };
 
-/*****File Uploader */
-const { prefix } = settings;
-var nluResult=["term1", "term2", "term3", "another term", "term 4", "term 5", "term 6", "my last term"];
-storage.setItem("nluEntities",JSON.stringify(nluResult));
+
 
 
 const filenameStatuses = {
@@ -333,7 +330,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 function HealthSection() {
-
+  const { prefix } = settings;
   return (
 
     <PageContainer as={Form} >
@@ -404,7 +401,10 @@ export default function AccountPage() {
     setValue(newValue);
   };
 
-
+  /*****Ugly coding to fix NLU result analysis */  
+  var nluResult=["term1", "term2", "term3", "another term", "term 4", "term 5", "term 6", "my last term"];
+  storage.setItem("nluEntities",JSON.stringify(nluResult));
+    
 
   //UGLY WORK AROUND FOR WASTSON ASSISTANT
   const refreshPage = () => {

@@ -190,6 +190,7 @@ export function getLog(message) {
 
 
 export function postNLU(file){
+  
   const postUrl = baseUrl + "/nlu";
   var formData = new FormData();
 	formData.append('formData', file);
@@ -203,30 +204,19 @@ export function postNLU(file){
   })
   .then(res => res.text())          // convert to plain text
   .then(text => {
-    console.log("Inside api.js text:",text);
+    
     var JSONObject = JSON.parse(text);
     var entitiesJSON = JSONObject["entities"];
-    console.log("entities:",entitiesJSON);
-    
+            
     var terms= [];
-      
+
     for(var i = 0; i < entitiesJSON.length; i++) {
       terms[i] = entitiesJSON[i].text;
       console.log("nlu terms:",terms[i]);  
   }
   storage.setItem("nluEntities", JSON.stringify(terms));
   
-  var nlu=JSON.parse(storage.getItem("nluEntities"));
-
-
-  for(var i = 0; i < nlu.length; i++) {
-    console.log(nlu[i]);
-    //analysis.terms[i]=nlu[i];
-      
-}
-
-
-    return entitiesJSON;
+    return terms;
   })
     .then(({ status }) => {
       //console.log("getLog status" + JSON.stringify({ status }));

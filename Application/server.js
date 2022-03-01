@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const multer  = require('multer');
 const upload = multer({ dest: '/tmp/uploads' });
 const utils = require('./utility');
+var env_config = require('./env_config');
 
 /*
 ///////////////Shifted to config.json///////////////////////
@@ -104,6 +105,10 @@ app.post('/api', (req, res) => {
 app.post('/api/nlu', upload.single('formData'), (req,res) => {
   console.log('Got your post for NLU');
   console.log("Inside server.js",req.file);
+
+  // var cloudpakUser=env_config.user_name;
+  // console.log("cloudpak user fetched from environment variable ",cloudpakUser);
+
   utils.NLUAnalysis(req.file.path,req.file.originalname).then(analysisResults => {
 
      res.send(JSON.stringify(analysisResults, null, 2))
