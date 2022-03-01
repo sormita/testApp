@@ -1,0 +1,53 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  tag: '$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'DockerHub Connection'
+        command: 'login'
+    
+    - task: oc-setup@2
+      inputs:
+        openshiftService: 'Openshift Connection'
+        version: '4.8.18'
+
+    # - task: oc-cmd@2
+    #   inputs:
+    #     connectionType: 'OpenShift Connection Service'
+    #     openshiftService: 'Openshift Connection'
+    #     cmd: 'oc import-image ubi8-s2i-web-app:latest --from=nodeshift/ubi8-s2i-web-app --confirm'
+      
+    - task: oc-cmd@2
+      inputs:
+        connectionType: 'OpenShift Connection Service'
+        openshiftService: 'Openshift Connection'
+        cmd: 'oc project metlife-product-debug'
+    
+
+    - task: oc-cmd@2
+      inputs:
+        connectionType: 'OpenShift Connection Service'
+        openshiftService: 'Openshift Connection'
+        cmd: 'oc new-app -e "YARN_ENABLED=true" https://github.com/sormita/testApp nodeshift/ubi8-s2i-web-app:latest --name=nodereact-product-debug --context-dir=Application --strategy=source'
+
+    

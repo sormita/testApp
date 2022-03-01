@@ -1,0 +1,57 @@
+<html>
+<header><title>This is title</title></header>
+
+<body>
+Hello world
+<script src="https://web-chat.global.assistant.watson.appdomain.cloud/loadWatsonAssistantChat.js"></script>
+<script>
+	/**
+   * Following the v2 message API Response
+   * at https://cloud.ibm.com/apidocs/assistant/assistant-v2#send-user-input-to-assistant,
+   * we add some items to context.
+   */
+  function preSendhandler(event) {
+
+    // When fetching the Welcome Node on startup, the context won't be defined, yet. If you want to add to
+    // context when fetching welcome node, you will need to define the context.
+    event.data.context.skills['main skill'] = event.data.context.skills['main skill'] || { user_defined: {} };
+    event.data.context.skills['main skill'].user_defined.sysmsg = "None";
+    //event.data.context.skills['main skill'].user_defined.sysmsg = "your father added you to his account";
+    
+    console.log(event.data.context.skills['main skill'].user_defined.sysmsg)
+    //event.data.context.skills['main skill'].user_defined.sysmsg = "Your father wants to add you to his account";
+
+    // You can OPTIONALLY return a promise and we will wait to continue processing until the promise is resolved. If
+    // you return nothing we will immediately continue processing the event. If you fail the Promise we will cancel
+    // sending the message.
+  
+    /*
+    return new Promise(function(resolve) {
+      myAsyncThing.then(function(moreData) {
+        // Do some other manipulation of event.data...
+        resolve();
+      });
+    }); 
+    */
+  }
+  window.watsonAssistantChatOptions = {
+      integrationID: "ADD YOUR Assistant Integration ID", // The ID of this integration.
+      region: "us-east", // The region your integration is hosted in.
+      serviceInstanceID: "Add you Assistant Service Instance", // The ID of your service instance.
+      //onLoad: function(instance) { instance.render(); }
+      onLoad: function(instance) {
+      // Subscribe to the "pre:send" event.
+        instance.on({ type: "pre:send", handler: preSendhandler });
+    
+        instance.render();
+      }
+
+    };
+  setTimeout(function(){
+    const t=document.createElement('script');
+    t.src="https://web-chat.global.assistant.watson.appdomain.cloud/loadWatsonAssistantChat.js";
+    document.head.appendChild(t);
+  });
+</script>
+</body>
+</html>
